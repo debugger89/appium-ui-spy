@@ -69,7 +69,6 @@ public class DriverBase {
 
 		// REMOVE LATER
 		driver.get("https://www.google.com");
-		executeScript("document.documentElement.webkitRequestFullscreen()");
 
 	}
 	

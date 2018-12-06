@@ -24,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -49,10 +50,23 @@ public class FxFXMLController {
 
 	@FXML
 	private AnchorPane mirrorRootAnchorPane;
+	
+	@FXML
+	private ComboBox<?> osSelection;
 
 	private Dimension currentPageSize;
 
 	public FxFXMLController() {
+	}
+	
+	private String getBase64Screenshot() throws IOException {
+		
+		DriverBase driverbase = DriverBase.getInstance();
+		if(Session.currentOS.equals(MobileOS.IOS)) {
+			return driverbase.getScreeenshotBase64();
+		}else {
+			return driverbase.getWebViewNativeScreenshot(Constants.ANDROID_FIRST_WEBVIEW_LOCATOR);
+		}
 	}
 
 	@FXML
@@ -61,8 +75,8 @@ public class FxFXMLController {
 		DriverBase driverbase = DriverBase.getInstance();
 
 		driverbase.getScreeenshotToFile(new File("DeviceScreenshot_Crurent.png"));
-		//String rocketImgStr = driverbase.getScreeenshotBase64();
-		String rocketImgStr = driverbase.getWebViewNativeScreenshot(Constants.FIRST_WEBVIEW_LOCATOR);
+		
+		String rocketImgStr = getBase64Screenshot();
 		
 		BASE64Decoder base64Decoder = new BASE64Decoder();
 		ByteArrayInputStream rocketInputStream = new ByteArrayInputStream(base64Decoder.decodeBuffer(rocketImgStr));
@@ -127,7 +141,7 @@ public class FxFXMLController {
 		String coordinateJson = tag.getAttributes().get(Constants.APPIUM_COORDINATE_ATTRIBUTE);
 		ElementCoordinates coordinates = new Gson().fromJson(coordinateJson, ElementCoordinates.class);
 		drawRectangleForNodeElement(coordinates);
-		System.out.println("clicked : " + tag.getTagName() + " " + coordinateJson);
+		System.out.println("clicked : " + tag.getTagName() + " " + coordinateJson  + " | " + tag);
 	}
 
 	private void expandTreeView(TreeItem<?> item) {
@@ -138,16 +152,32 @@ public class FxFXMLController {
 			}
 		}
 	}
+	
+	
+	private void setCurrentOS() {
+		String selectedOS = osSelection.getSelectionModel().getSelectedItem().toString();
+		if("IOS".equals(selectedOS)) {
+			Session.currentOS = MobileOS.IOS;
+		}else if("ANDROID".equals(selectedOS)) {
+			Session.currentOS = MobileOS.ANDROID;
+		}
+	}
 
 	@FXML
 	private void startStopServer() {
+		
+		setCurrentOS();
+		
 		if (serverStartStop.isSelected()) {
 			serverStartStop.setText("Stop Service");
 
 			DriverBase driverbase = DriverBase.getInstance();
 			DesiredCapabilities desiredCapabilities = getDesiredCapabilitiesFRomProperty();
 			try {
-				driverbase.initializeAppiumDriver(desiredCapabilities, MobileOS.ANDROID);
+				
+				driverbase.initializeAppiumDriver(desiredCapabilities, Session.currentOS);
+				
+				osSelection.setDisable(true);
 
 			} catch (ConfigurationException e) {
 
@@ -172,6 +202,7 @@ public class FxFXMLController {
 			}
 
 		} else {
+			osSelection.setDisable(false);
 			serverStartStop.setText("Start Service");
 			DriverBase driverbase = DriverBase.getInstance();
 			if (driverbase.getDriver() != null) {
@@ -183,15 +214,29 @@ public class FxFXMLController {
 
 	// To be removed later when the config window comes in
 	private DesiredCapabilities getDesiredCapabilitiesFRomProperty() {
-		DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-		desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, MobileBrowserType.CHROME);
-		desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
-		desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "7");
-		desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
-		desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "emulator-5554");
-		desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
-				new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
-		return desiredCapabilities;
+		
+		if (Session.currentOS.equals(MobileOS.IOS)) {
+
+			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "iOS");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "10.3");
+			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
+			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 5");
+			return desiredCapabilities;
+		} else {
+			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, MobileBrowserType.CHROME);
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "7");
+			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
+			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "emulator-5554");
+			desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
+					new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
+			return desiredCapabilities;
+		}
+		
+
 	}
 
 }

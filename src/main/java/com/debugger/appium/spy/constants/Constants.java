@@ -14,5 +14,10 @@ public class Constants {
 	
 	public final static String APPIUM_COORDINATE_ATTRIBUTE = "_appium_element_coords";
 	
-	public final static By FIRST_WEBVIEW_LOCATOR = By.xpath("//android.webkit.WebView");
+	
+	public final static By ANDROID_FIRST_WEBVIEW_LOCATOR = By.xpath("//android.webkit.WebView");
+	
+	public final static By IOS_FIRST_WEBVIEW_LOCATOR = By.xpath("//XCUIElementTypeWebView/XCUIElementTypeOther");
+	
+	
 }
