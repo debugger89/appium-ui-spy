@@ -1,4 +1,4 @@
-package appium.experiments.spy;
+package com.debugger.appium.spy.ui.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +11,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.jsoup.select.NodeVisitor;
+
+import com.debugger.appium.spy.ui.NodeVisitorHelper;
 
 import javafx.scene.control.TreeItem;
 import net.sourceforge.htmlunit.corejs.javascript.NodeTransformer;

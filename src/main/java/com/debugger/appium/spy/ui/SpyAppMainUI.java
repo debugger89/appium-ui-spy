@@ -1,4 +1,4 @@
-package appium.experiments.spy;
+package com.debugger.appium.spy.ui;
 
 import java.io.File;
 import java.io.FileInputStream;

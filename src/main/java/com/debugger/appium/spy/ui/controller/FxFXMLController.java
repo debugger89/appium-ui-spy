@@ -1,4 +1,4 @@
-package appium.experiments.spy;
+package com.debugger.appium.spy.ui.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -11,6 +11,11 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.debugger.appium.spy.constants.Constants;
+import com.debugger.appium.spy.constants.MobileOS;
+import com.debugger.appium.spy.driver.DriverBase;
+import com.debugger.appium.spy.driver.ElementCoordinates;
+import com.debugger.appium.spy.utils.DialogHandler;
 import com.google.gson.Gson;
 
 import io.appium.java_client.remote.MobileBrowserType;
@@ -28,8 +33,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import sun.misc.BASE64Decoder;
 
-@SuppressWarnings("restriction")
-public class FxFXMLController_Back {
+public class FxFXMLController {
 
 	@FXML
 	private ImageView screenshotMirror;
@@ -48,9 +52,7 @@ public class FxFXMLController_Back {
 
 	private Dimension currentPageSize;
 
-	private Dimension2D currentImageSize;
-
-	public FxFXMLController_Back() {
+	public FxFXMLController() {
 	}
 
 	@FXML
@@ -58,13 +60,14 @@ public class FxFXMLController_Back {
 		System.out.println("hoorah");
 		DriverBase driverbase = DriverBase.getInstance();
 
-		String rocketImgStr = driverbase.getScreeenshotBase64();
+		driverbase.getScreeenshotToFile(new File("DeviceScreenshot_Crurent.png"));
+		//String rocketImgStr = driverbase.getScreeenshotBase64();
+		String rocketImgStr = driverbase.getWebViewNativeScreenshot(Constants.FIRST_WEBVIEW_LOCATOR);
 		
 		BASE64Decoder base64Decoder = new BASE64Decoder();
 		ByteArrayInputStream rocketInputStream = new ByteArrayInputStream(base64Decoder.decodeBuffer(rocketImgStr));
 		Image img = new Image(rocketInputStream);
 		
-		currentImageSize = new Dimension2D(img.getWidth(), img.getHeight());
 
 		
 		String pagesource = driverbase.getCordinatedPageSource();
@@ -79,7 +82,7 @@ public class FxFXMLController_Back {
 		GraphicsContext gc = mirrorCanvas.getGraphicsContext2D();
 		gc.drawImage(img, 0, 0, mirrorCanvas.getWidth(), mirrorCanvas.getHeight());
 
-		drawRectangleTest();
+		drawRectangleOutline();
 
 		JsoupParser htmlparser = new JsoupParser();
 		TreeItem<NodeTag> htmltree = htmlparser.createHTMLTreeNode(pagesource);
@@ -101,15 +104,11 @@ public class FxFXMLController_Back {
 
 	}
 
-	private void drawRectangleTest() {
-		double widthFactor = getResizedFactor(currentPageSize.width, mirrorCanvas.getWidth());
-		double heightFactor = getResizedFactor(currentPageSize.height, mirrorCanvas.getHeight());
-
+	private void drawRectangleOutline() {
 		GraphicsContext gc = mirrorCanvas.getGraphicsContext2D();
 		gc.setLineWidth(2);
-		gc.setStroke(Color.PURPLE);
+		gc.setStroke(Color.GREEN);
 
-		//gc.strokeRect(0, 0, (currentPageSize.width * widthFactor), (currentPageSize.height * heightFactor));
 		gc.strokeRect(0, 0, mirrorCanvas.getWidth(), mirrorCanvas.getHeight());
 	}
 

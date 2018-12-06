@@ -1,4 +1,4 @@
-package appium.experiments.spy;
+package com.debugger.appium.spy.driver;
 
 public class ElementCoordinates {
 

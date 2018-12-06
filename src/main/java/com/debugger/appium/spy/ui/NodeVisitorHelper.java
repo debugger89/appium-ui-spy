@@ -1,4 +1,4 @@
-package appium.experiments.spy;
+package com.debugger.appium.spy.ui;
 
 import java.util.Arrays;
 
@@ -7,6 +7,9 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.NodeVisitor;
 
+import com.debugger.appium.spy.constants.Constants;
+import com.debugger.appium.spy.driver.ElementCoordinates;
+import com.debugger.appium.spy.ui.controller.NodeTag;
 import com.google.gson.Gson;
 
 import javafx.scene.control.TreeItem;

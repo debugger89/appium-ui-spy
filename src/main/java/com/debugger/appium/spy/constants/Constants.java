@@ -1,4 +1,4 @@
-package appium.experiments.spy;
+package com.debugger.appium.spy.constants;
 
 import org.openqa.selenium.By;
 
