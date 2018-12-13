@@ -63,9 +63,10 @@ public class FxFXMLController {
 		
 		DriverBase driverbase = DriverBase.getInstance();
 		if(Session.currentOS.equals(MobileOS.IOS)) {
-			return driverbase.getScreeenshotBase64();
+			//return driverbase.getScreeenshotBase64();
+			return driverbase.getIOSWebKitProxyAssistedScreenshot();
 		}else {
-			return driverbase.getWebViewNativeScreenshot(Constants.ANDROID_FIRST_WEBVIEW_LOCATOR);
+			return driverbase.getAndroidWebViewNativeScreenshot(Constants.ANDROID_FIRST_WEBVIEW_LOCATOR);
 		}
 	}
 
@@ -108,14 +109,31 @@ public class FxFXMLController {
 	private void drawRectangleForNodeElement(ElementCoordinates tagCoordinates) {
 		double widthFactor = getResizedFactor(currentPageSize.width, mirrorCanvas.getWidth());
 		double heightFactor = getResizedFactor(currentPageSize.height, mirrorCanvas.getHeight());
+		//double heightFactor = getResizedFactor(551-64, mirrorCanvas.getHeight());
 
+		System.out.println("Original ElementCoordiantes for Clicked element : "+tagCoordinates);
+		
 		GraphicsContext gc = mirrorCanvas.getGraphicsContext2D();
 		gc.setLineWidth(Constants.RECTANGLE_WEIGHT);
 		gc.setStroke(Constants.RECTANGLE_COLOR);
+		
+		if (Session.currentOS == MobileOS.ANDROID) {
+			System.out.println("Drawn rectangle : " + (tagCoordinates.getX() * widthFactor) + ","
+					+ (tagCoordinates.getY() * heightFactor) + "," + (tagCoordinates.getWidth() * widthFactor) + ","
+					+ (tagCoordinates.getHeight() * heightFactor));
 
-		gc.strokeRect((tagCoordinates.getX() * widthFactor), (tagCoordinates.getY() * heightFactor),
-				(tagCoordinates.getWidth() * widthFactor), (tagCoordinates.getHeight() * heightFactor));
+			gc.strokeRect((tagCoordinates.getX() * widthFactor), (tagCoordinates.getY() * heightFactor),
+					(tagCoordinates.getWidth() * widthFactor), (tagCoordinates.getHeight() * heightFactor));
+			
+		} else if (Session.currentOS == MobileOS.IOS) {
+			System.out.println("Drawn rectangle : " + (tagCoordinates.getLeft() * widthFactor) + ","
+					+ (tagCoordinates.getTop() * heightFactor) + "," + (tagCoordinates.getWidth() * widthFactor) + ","
+					+ (tagCoordinates.getHeight() * heightFactor));
 
+			gc.strokeRect((tagCoordinates.getLeft() * widthFactor), (tagCoordinates.getTop() * heightFactor),
+					(tagCoordinates.getWidth() * widthFactor), (tagCoordinates.getHeight() * heightFactor ));
+		}
+		
 	}
 
 	private void drawRectangleOutline() {
@@ -231,6 +249,7 @@ public class FxFXMLController {
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "7");
 			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
 			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "emulator-5554");
+			//desiredCapabilities.setCapability("automationName", "UiAutomator2");
 			desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
 					new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
 			return desiredCapabilities;

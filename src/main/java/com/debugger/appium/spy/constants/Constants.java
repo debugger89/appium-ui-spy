@@ -17,7 +17,5 @@ public class Constants {
 	
 	public final static By ANDROID_FIRST_WEBVIEW_LOCATOR = By.xpath("//android.webkit.WebView");
 	
-	public final static By IOS_FIRST_WEBVIEW_LOCATOR = By.xpath("//XCUIElementTypeWebView/XCUIElementTypeOther");
-	
 	
 }
