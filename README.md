@@ -11,4 +11,6 @@ Requirements :
 
 1. Install remotedebug-ios-webkit-adapter
 	- Installation instructions avaiulable at the github page
-	- https://github.com/RemoteDebug/remotedebug-ios-webkit-adapter
+		- https://github.com/RemoteDebug/remotedebug-ios-webkit-adapter
+
+
