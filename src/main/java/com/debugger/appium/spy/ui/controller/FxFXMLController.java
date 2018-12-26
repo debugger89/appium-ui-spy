@@ -4,8 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.http.HttpException;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -15,13 +17,14 @@ import com.debugger.appium.spy.constants.Constants;
 import com.debugger.appium.spy.constants.MobileOS;
 import com.debugger.appium.spy.driver.DriverBase;
 import com.debugger.appium.spy.driver.ElementCoordinates;
+import com.debugger.appium.spy.exceptions.NoDeviceConnectedException;
 import com.debugger.appium.spy.utils.DialogHandler;
+import com.debugger.appium.spy.webkit.WebKitProxySession;
 import com.google.gson.Gson;
 
 import io.appium.java_client.remote.MobileBrowserType;
 import io.appium.java_client.remote.MobileCapabilityType;
 import javafx.fxml.FXML;
-import javafx.geometry.Dimension2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
@@ -59,22 +62,27 @@ public class FxFXMLController {
 	public FxFXMLController() {
 	}
 	
-	private String getBase64Screenshot() throws IOException {
+	private String getBase64Screenshot() throws IOException, HttpException, NoDeviceConnectedException, URISyntaxException, InterruptedException {
 		
 		DriverBase driverbase = DriverBase.getInstance();
 		if(Session.currentOS.equals(MobileOS.IOS)) {
-			//return driverbase.getScreeenshotBase64();
-			return driverbase.getIOSWebKitProxyAssistedScreenshot();
+			//return driverbase.getIOSWebKitProxyAssistedScreenshot();
+			//return driverbase.getAndroidWebViewNativeScreenshot(Constants.IOS_FIRST_WEBVIEW_LOCATOR);
+			return driverbase.getIOSWebViewNativeScreenshot(Constants.IOS_FIRST_WEBVIEW_LOCATOR);
 		}else {
 			return driverbase.getAndroidWebViewNativeScreenshot(Constants.ANDROID_FIRST_WEBVIEW_LOCATOR);
 		}
 	}
 
 	@FXML
-	private void refreshScreenshot() throws IOException {
+	private void refreshScreenshot() throws IOException, HttpException, NoDeviceConnectedException, URISyntaxException, InterruptedException {
 		System.out.println("hoorah");
+		
+		String targetContextName = "";
+		
 		DriverBase driverbase = DriverBase.getInstance();
-
+		//driverbase.getDriver().getContext()
+		// Remove Later
 		driverbase.getScreeenshotToFile(new File("DeviceScreenshot_Crurent.png"));
 		
 		String rocketImgStr = getBase64Screenshot();
@@ -83,12 +91,11 @@ public class FxFXMLController {
 		ByteArrayInputStream rocketInputStream = new ByteArrayInputStream(base64Decoder.decodeBuffer(rocketImgStr));
 		Image img = new Image(rocketInputStream);
 		
-
 		
 		String pagesource = driverbase.getCordinatedPageSource();
 		currentPageSize = driverbase.getPageSize();
 
-		System.out.println(pagesource);
+		// System.out.println(pagesource);
 
 		// resize the canvas to fit anchor pane
 		mirrorCanvas.setWidth(mirrorRootAnchorPane.getWidth());
@@ -196,6 +203,10 @@ public class FxFXMLController {
 				driverbase.initializeAppiumDriver(desiredCapabilities, Session.currentOS);
 				
 				osSelection.setDisable(true);
+				
+				// Start the IOS Debug proxy terminal/ 
+				// TO DO : check for OS type
+				//WebKitProxySession.getInstance().initiateSession();
 
 			} catch (ConfigurationException e) {
 
@@ -239,11 +250,22 @@ public class FxFXMLController {
 			desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "iOS");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "10.3");
-			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
+			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "3000");
 			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 5");
+			//desiredCapabilities.setCapability("startIWDP", false);
 			return desiredCapabilities;
+			
+			/*DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "iOS");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "12.1");
+			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "30");
+			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 6");
+			//desiredCapabilities.setCapability("startIWDP", false);
+			return desiredCapabilities;*/
+			
 		} else {
-			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			/*DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
 			desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, MobileBrowserType.CHROME);
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "7");
@@ -252,6 +274,19 @@ public class FxFXMLController {
 			//desiredCapabilities.setCapability("automationName", "UiAutomator2");
 			desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
 					new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
+			return desiredCapabilities;*/
+			
+			
+			
+			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			desiredCapabilities.setCapability(MobileCapabilityType.APP, "/Users/cdushmantha/Downloads/gtn (1).apk");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "7");
+			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
+			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "emulator-5554");
+			//desiredCapabilities.setCapability("automationName", "UiAutomator2");
+			//desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
+			//		new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
 			return desiredCapabilities;
 		}
 		
