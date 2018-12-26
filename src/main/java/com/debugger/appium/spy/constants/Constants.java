@@ -14,8 +14,11 @@ public class Constants {
 	
 	public final static String APPIUM_COORDINATE_ATTRIBUTE = "_appium_element_coords";
 	
-	
 	public final static By ANDROID_FIRST_WEBVIEW_LOCATOR = By.xpath("//android.webkit.WebView");
 	
+	public final static By IOS_FIRST_WEBVIEW_LOCATOR = By.xpath("//XCUIElementTypeWebView/XCUIElementTypeOther");
 	
+	public final static int IOS_DEBUG_PROXY_PORT = 4747;
+	
+	public final static long IOS_DEBUG_PROXY_STARTUP_WAIT_TIME_MILLIS = 5000;
 }
