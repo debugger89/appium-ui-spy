@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.http.HttpException;
 import org.openqa.selenium.Dimension;
@@ -62,7 +64,7 @@ public class FxFXMLController {
 	public FxFXMLController() {
 	}
 	
-	private String getBase64Screenshot() throws IOException, HttpException, NoDeviceConnectedException, URISyntaxException, InterruptedException {
+	private String getBase64Screenshot() throws IOException, HttpException, NoDeviceConnectedException, URISyntaxException, InterruptedException, ParserConfigurationException {
 		
 		DriverBase driverbase = DriverBase.getInstance();
 		if(Session.currentOS.equals(MobileOS.IOS)) {
@@ -75,7 +77,7 @@ public class FxFXMLController {
 	}
 
 	@FXML
-	private void refreshScreenshot() throws IOException, HttpException, NoDeviceConnectedException, URISyntaxException, InterruptedException {
+	private void refreshScreenshot() throws IOException, HttpException, NoDeviceConnectedException, URISyntaxException, InterruptedException, ParserConfigurationException {
 		System.out.println("hoorah");
 		
 		String targetContextName = "";
@@ -246,6 +248,15 @@ public class FxFXMLController {
 		
 		if (Session.currentOS.equals(MobileOS.IOS)) {
 
+			/*DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			desiredCapabilities.setCapability("bundleId", "com.debugger.WebViewExample");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "iOS");
+			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "10.3");
+			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "3000");
+			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 5");
+			//desiredCapabilities.setCapability("startIWDP", false);
+			return desiredCapabilities;*/
+			
 			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
 			desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "iOS");
@@ -279,12 +290,12 @@ public class FxFXMLController {
 			
 			
 			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-			desiredCapabilities.setCapability(MobileCapabilityType.APP, "/Users/cdushmantha/Downloads/gtn (1).apk");
+			desiredCapabilities.setCapability(MobileCapabilityType.APP, "/Users/cdushmantha/One Drive/OneDrive - Infor/Shared/gtn.apk");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "7");
 			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
 			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "emulator-5554");
-			//desiredCapabilities.setCapability("automationName", "UiAutomator2");
+			desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "UiAutomator2");
 			//desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
 			//		new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
 			return desiredCapabilities;

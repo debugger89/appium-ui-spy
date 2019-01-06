@@ -16,7 +16,7 @@ public class Constants {
 	
 	public final static By ANDROID_FIRST_WEBVIEW_LOCATOR = By.xpath("//android.webkit.WebView");
 	
-	public final static By IOS_FIRST_WEBVIEW_LOCATOR = By.xpath("//XCUIElementTypeWebView/XCUIElementTypeOther");
+	public final static By IOS_FIRST_WEBVIEW_LOCATOR = By.xpath("//XCUIElementTypeWebView");
 	
 	public final static int IOS_DEBUG_PROXY_PORT = 4747;
 	

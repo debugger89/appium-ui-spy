@@ -17,6 +17,7 @@ import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -35,6 +36,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.debugger.appium.spy.constants.MobileOS;
 import com.debugger.appium.spy.exceptions.NoDeviceConnectedException;
+import com.debugger.appium.spy.utils.SourceXMLParser;
 import com.debugger.appium.spy.webkit.IOSDebugProxyMessage;
 import com.debugger.appium.spy.webkit.WebKitConnector;
 import com.debugger.appium.spy.webkit.WebkitProxyApiConsumer;
@@ -42,6 +44,7 @@ import com.debugger.appium.spy.webkit.socket.IOSDebugProxyWebSocketMessageHander
 import com.debugger.appium.spy.webkit.socket.WebKitSocketClient;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 
@@ -143,7 +146,7 @@ public class DriverBase {
 	}
 	
 	
-	public String getIOSWebViewNativeScreenshot(By webviewLocator) throws IOException {
+	public String getIOSWebViewNativeScreenshot(By webviewLocator) throws IOException, ParserConfigurationException {
 
 		String currentContext = driver.getContext();
 		try {
@@ -156,12 +159,15 @@ public class DriverBase {
 			
 			byte[] imgarr = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 			System.out.println(driver.getPageSource());
-			WebElement webview = driver.findElement(webviewLocator);
-			
+			//WebElement elementBeforeWebview = driver.findElementByXPath("//XCUIElementTypeWebView/parent::*[@y > 0]"); 
+			//XCUIElementTypeWebView/parent::*[@y > 0]
+			MobileElement webview = (MobileElement)driver.findElement(webviewLocator);
 			//FileUtils.copyFile(webview.getScreenshotAs(OutputType.FILE), new File("WebViewScreen"));
-			
+			//System.out.println(getCordinatedPageSource());
+			SourceXMLParser sourceParser = new SourceXMLParser();
+			Point elementBeforeWebviewLocation  = sourceParser.getElementBeforeTargetElement("XCUIElementTypeWebView", driver.getPageSource());
 			Dimension webviewSize = webview.getSize();
-			Point webviewLocation = webview.getLocation();
+			Point webviewLocation = new Point(0, elementBeforeWebviewLocation.y);
 
 			System.out.println(
 					webviewSize.width + "," + webviewSize.height + " | " + webviewLocation.x + "," + webviewLocation.y);
@@ -169,10 +175,12 @@ public class DriverBase {
 			BufferedImage original = createImageFromBytes(imgarr);
 			System.out.println(original.getWidth() + "," + original.getHeight());
 
-			original = Scalr.resize(original, nativeDimention.height, nativeDimention.height);
-			
-			Rectangle rect = new Rectangle(webviewLocation.x, webviewLocation.y, webDimention.width, webDimention.height);
-			
+			original = Scalr.resize(original, nativeDimention.width, nativeDimention.height);
+			ImageIO.write(original, "png", new File("ResizedWebView.png"));
+			System.out.println(original.getWidth() + "," + original.getHeight());
+
+			Rectangle rect = new Rectangle(webviewLocation.x, webviewLocation.y, original.getWidth(), (webview.getSize().height - webviewLocation.y) );
+			System.out.println(rect);
 			//Android Working Rectangle
 			//Rectangle rect = new Rectangle(webview.getLocation().x, webview.getLocation().y, original.getWidth(),
 			//		webviewSize.height);
@@ -190,7 +198,10 @@ public class DriverBase {
 	
 	
 	public String getAndroidWebViewNativeScreenshot(By webviewLocator) throws IOException {
-
+		
+		// REMOVE LATER
+		driver.context("WEBVIEW_com.infor.gtnexus.gtnmobile");
+		
 		String currentContext = driver.getContext();
 		try {
 			driver.context("NATIVE_APP");
