@@ -52,6 +52,8 @@ public class DriverBase {
 
 	private AppiumDriver<WebElement> driver;
 	private static DriverBase driverBaseInstance = null;
+	
+	private int currentWwebViewStartY;
 
 	private DriverBase() {
 	}
@@ -145,6 +147,27 @@ public class DriverBase {
 
 	}
 	
+	public Dimension getNativePageSize() {
+
+		Dimension windowSize;
+		
+		String currentContext = driver.getContext();
+		
+		try {
+			driver.context("NATIVE_APP");
+			windowSize = driver.manage().window().getSize();
+
+		} finally {
+			driver.context(currentContext);
+		}
+
+		return windowSize;
+
+	}
+	
+	
+	
+	
 	
 	public String getIOSWebViewNativeScreenshot(By webviewLocator) throws IOException, ParserConfigurationException {
 
@@ -168,6 +191,8 @@ public class DriverBase {
 			Point elementBeforeWebviewLocation  = sourceParser.getElementBeforeTargetElement("XCUIElementTypeWebView", driver.getPageSource());
 			Dimension webviewSize = webview.getSize();
 			Point webviewLocation = new Point(0, elementBeforeWebviewLocation.y);
+			
+			currentWwebViewStartY = elementBeforeWebviewLocation.y;
 
 			System.out.println(
 					webviewSize.width + "," + webviewSize.height + " | " + webviewLocation.x + "," + webviewLocation.y);
@@ -179,16 +204,16 @@ public class DriverBase {
 			ImageIO.write(original, "png", new File("ResizedWebView.png"));
 			System.out.println(original.getWidth() + "," + original.getHeight());
 
-			Rectangle rect = new Rectangle(webviewLocation.x, webviewLocation.y, original.getWidth(), (webview.getSize().height - webviewLocation.y) );
-			System.out.println(rect);
+			//Rectangle rect = new Rectangle(webviewLocation.x, webviewLocation.y, original.getWidth(), (webview.getSize().height - webviewLocation.y) );
+			//System.out.println(rect);
 			//Android Working Rectangle
 			//Rectangle rect = new Rectangle(webview.getLocation().x, webview.getLocation().y, original.getWidth(),
 			//		webviewSize.height);
 			
-			BufferedImage cropped = cropImage(original, rect);
-			ImageIO.write(cropped, "png", new File("CroppedWebView.png"));
+			//BufferedImage cropped = cropImage(original, rect);
+			//ImageIO.write(original, "png", new File("CroppedWebView.png"));
 			
-			return imgToBase64String(cropped, "PNG");
+			return imgToBase64String(original, "PNG");
 			
 		} finally {
 			driver.context(currentContext);
@@ -291,5 +316,10 @@ public class DriverBase {
 	        throw new UncheckedIOException(ioe);
 	    }
 	}
+
+	public int getCurrentWwebViewStartY() {
+		return currentWwebViewStartY;
+	}
+
 
 }

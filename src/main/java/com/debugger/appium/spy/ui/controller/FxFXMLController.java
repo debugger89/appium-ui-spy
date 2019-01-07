@@ -95,8 +95,9 @@ public class FxFXMLController {
 		
 		
 		String pagesource = driverbase.getCordinatedPageSource();
+		
 		currentPageSize = driverbase.getPageSize();
-
+		
 		// System.out.println(pagesource);
 
 		// resize the canvas to fit anchor pane
@@ -116,8 +117,7 @@ public class FxFXMLController {
 	}
 
 	private void drawRectangleForNodeElement(ElementCoordinates tagCoordinates) {
-		double widthFactor = getResizedFactor(currentPageSize.width, mirrorCanvas.getWidth());
-		double heightFactor = getResizedFactor(currentPageSize.height, mirrorCanvas.getHeight());
+		
 		//double heightFactor = getResizedFactor(551-64, mirrorCanvas.getHeight());
 
 		System.out.println("Original ElementCoordiantes for Clicked element : "+tagCoordinates);
@@ -127,6 +127,10 @@ public class FxFXMLController {
 		gc.setStroke(Constants.RECTANGLE_COLOR);
 		
 		if (Session.currentOS == MobileOS.ANDROID) {
+			
+			double widthFactor = getResizedFactor(currentPageSize.width, mirrorCanvas.getWidth());
+			double heightFactor = getResizedFactor(currentPageSize.height, mirrorCanvas.getHeight());
+			
 			System.out.println("Drawn rectangle : " + (tagCoordinates.getX() * widthFactor) + ","
 					+ (tagCoordinates.getY() * heightFactor) + "," + (tagCoordinates.getWidth() * widthFactor) + ","
 					+ (tagCoordinates.getHeight() * heightFactor));
@@ -135,11 +139,20 @@ public class FxFXMLController {
 					(tagCoordinates.getWidth() * widthFactor), (tagCoordinates.getHeight() * heightFactor));
 			
 		} else if (Session.currentOS == MobileOS.IOS) {
+			
+			DriverBase driverbase = DriverBase.getInstance();
+			currentPageSize = driverbase.getNativePageSize();
+			
+			double widthFactor = getResizedFactor(currentPageSize.width, mirrorCanvas.getWidth());
+			double heightFactor = getResizedFactor(currentPageSize.height, mirrorCanvas.getHeight());
+			
+			double optimalStartY = tagCoordinates.getTop() + driverbase.getCurrentWwebViewStartY();
+			
 			System.out.println("Drawn rectangle : " + (tagCoordinates.getLeft() * widthFactor) + ","
-					+ (tagCoordinates.getTop() * heightFactor) + "," + (tagCoordinates.getWidth() * widthFactor) + ","
+					+ (optimalStartY * heightFactor) + "," + (tagCoordinates.getWidth() * widthFactor) + ","
 					+ (tagCoordinates.getHeight() * heightFactor));
 
-			gc.strokeRect((tagCoordinates.getLeft() * widthFactor), (tagCoordinates.getTop() * heightFactor),
+			gc.strokeRect((tagCoordinates.getLeft() * widthFactor), ((optimalStartY * heightFactor)),
 					(tagCoordinates.getWidth() * widthFactor), (tagCoordinates.getHeight() * heightFactor ));
 		}
 		
