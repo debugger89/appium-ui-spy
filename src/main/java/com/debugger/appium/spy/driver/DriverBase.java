@@ -82,8 +82,8 @@ public class DriverBase {
 			driver.manage().timeouts().implicitlyWait(appiumTimeoutInt, TimeUnit.SECONDS);
 		}
 
-		// REMOVE LATER
-		driver.get("https://www.ebay.com");
+		// REMOVE IF HYBRID
+		 driver.get("https://www.ebay.com");
 
 	}
 	
@@ -178,7 +178,7 @@ public class DriverBase {
 			
 			driver.context("NATIVE_APP");
 			
-			Dimension nativeDimention = getPageSize();
+			Dimension nativeDimention = getNativePageSize();
 			
 			byte[] imgarr = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 			System.out.println(driver.getPageSource());
@@ -225,7 +225,7 @@ public class DriverBase {
 	public String getAndroidWebViewNativeScreenshot(By webviewLocator) throws IOException {
 		
 		// REMOVE LATER
-		driver.context("WEBVIEW_com.infor.gtnexus.gtnmobile");
+		//driver.context("WEBVIEW_com.infor.gtnexus.gtnmobile");
 		
 		String currentContext = driver.getContext();
 		try {

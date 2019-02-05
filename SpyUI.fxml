@@ -101,6 +101,7 @@
 			                </FXCollections>
             			</items>
             	  </ComboBox>
+                  <ComboBox fx:id="currentContexts" layoutX="14.0" layoutY="141.0" onAction="#setCurrentContext" prefHeight="27.0" prefWidth="186.0" />
           </children>
         </AnchorPane>
       </items>

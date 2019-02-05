@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -21,7 +22,6 @@ import com.debugger.appium.spy.driver.DriverBase;
 import com.debugger.appium.spy.driver.ElementCoordinates;
 import com.debugger.appium.spy.exceptions.NoDeviceConnectedException;
 import com.debugger.appium.spy.utils.DialogHandler;
-import com.debugger.appium.spy.webkit.WebKitProxySession;
 import com.google.gson.Gson;
 
 import io.appium.java_client.remote.MobileBrowserType;
@@ -58,6 +58,9 @@ public class FxFXMLController {
 	
 	@FXML
 	private ComboBox<?> osSelection;
+	
+	@FXML
+	private ComboBox<String> currentContexts;
 
 	private Dimension currentPageSize;
 
@@ -75,14 +78,25 @@ public class FxFXMLController {
 			return driverbase.getAndroidWebViewNativeScreenshot(Constants.ANDROID_FIRST_WEBVIEW_LOCATOR);
 		}
 	}
+	
+	private void refreshContextDropDown() {
+		
+DriverBase driverbase = DriverBase.getInstance();
+		
+		Set<String> contexts = driverbase.getDriver().getContextHandles();
+	
+		currentContexts.getItems().clear();
+		currentContexts.getItems().addAll(contexts);
+	}
 
 	@FXML
 	private void refreshScreenshot() throws IOException, HttpException, NoDeviceConnectedException, URISyntaxException, InterruptedException, ParserConfigurationException {
 		System.out.println("hoorah");
 		
-		String targetContextName = "";
-		
 		DriverBase driverbase = DriverBase.getInstance();
+		
+		refreshContextDropDown();
+	
 		//driverbase.getDriver().getContext()
 		// Remove Later
 		driverbase.getScreeenshotToFile(new File("DeviceScreenshot_Crurent.png"));
@@ -202,6 +216,12 @@ public class FxFXMLController {
 			Session.currentOS = MobileOS.ANDROID;
 		}
 	}
+	
+	@FXML
+	private void setCurrentContext() {
+		String context = currentContexts.getSelectionModel().getSelectedItem().toString();
+		DriverBase.getInstance().getDriver().context(context);
+	}
 
 	@FXML
 	private void startStopServer() {
@@ -289,7 +309,7 @@ public class FxFXMLController {
 			return desiredCapabilities;*/
 			
 		} else {
-			/*DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
 			desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, MobileBrowserType.CHROME);
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "7");
@@ -298,10 +318,10 @@ public class FxFXMLController {
 			//desiredCapabilities.setCapability("automationName", "UiAutomator2");
 			desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
 					new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
-			return desiredCapabilities;*/
+			return desiredCapabilities;
 			
 			
-			
+			/*
 			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
 			desiredCapabilities.setCapability(MobileCapabilityType.APP, "/Users/cdushmantha/One Drive/OneDrive - Infor/Shared/gtn.apk");
 			desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
@@ -309,9 +329,11 @@ public class FxFXMLController {
 			desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "300");
 			desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "emulator-5554");
 			desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "UiAutomator2");
+			desiredCapabilities.setCapability("autoGrantPermissions", "true");
 			//desiredCapabilities.setCapability(ChromeOptions.CAPABILITY,
 			//		new ChromeOptions().addArguments("no-first-run", "show_on_first_run_allowed=false"));
 			return desiredCapabilities;
+			*/
 		}
 		
 

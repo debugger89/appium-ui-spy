@@ -1,9 +1,9 @@
 
-function _TaaS_getWebElementCoordinates(){
+function _Appium_getWebElementCoordinates(){
 
     var all = document.getElementsByTagName('*');
 
-    //var overlay = _TaaS_addOverlayToScreen()
+    //var overlay = _Appium_addOverlayToScreen()
 
     for (var i = 0, max = all.length; i < max; i++) {
         
@@ -13,12 +13,12 @@ function _TaaS_getWebElementCoordinates(){
         element.setAttribute("_APPIUM_ELEMENT_COORDS",  JSON.stringify(eleRect));
 
         // Draw the lines using the bounding rectangle for a element
-        //_TaaS_displayBordersForElement(eleRect);
+        _Appium_displayBordersForElement(eleRect);
     }
  
 };
 
-function _TaaS_displayBordersForElement(eleRect){
+function _Appium_displayBordersForElement(eleRect){
         var elemDiv = document.createElement('div');
         elemDiv.style.borderStyle = "solid";
         elemDiv.style.borderWidth = "1px";
@@ -33,7 +33,7 @@ function _TaaS_displayBordersForElement(eleRect){
         elemDiv.style.left = eleRect.left + "px";
 }
 
-function _TaaS_addOverlayToScreen(){
+function _Appium_addOverlayToScreen(){
     var overlay = document.createElement('div');
     overlay.style.position = "fixed";
     overlay.style.width = "100%";
@@ -48,4 +48,4 @@ function _TaaS_addOverlayToScreen(){
     return overlay;
 }
 
-_TaaS_getWebElementCoordinates();
+_Appium_getWebElementCoordinates();
